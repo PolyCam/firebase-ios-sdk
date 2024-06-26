@@ -20,6 +20,7 @@ import class Foundation.ProcessInfo
 import PackageDescription
 
 let firebaseVersion = "10.28.1"
+let firebaseSourceFirestore = true
 
 let package = Package(
   name: "Firebase",
@@ -1417,7 +1418,7 @@ func abseilDependency() -> Package.Dependency {
 
   // If building Firestore from source, abseil will need to be built as source
   // as the headers in the binary version of abseil are unusable.
-  if ProcessInfo.processInfo.environment["FIREBASE_SOURCE_FIRESTORE"] != nil {
+  if firebaseSourceFirestore {
     packageInfo = (
       "https://github.com/firebase/abseil-cpp-SwiftPM.git",
       "0.20240116.1" ..< "0.20240117.0"
@@ -1437,7 +1438,7 @@ func grpcDependency() -> Package.Dependency {
 
   // If building Firestore from source, abseil will need to be built as source
   // as the headers in the binary version of abseil are unusable.
-  if ProcessInfo.processInfo.environment["FIREBASE_SOURCE_FIRESTORE"] != nil {
+  if firebaseSourceFirestore {
     packageInfo = ("https://github.com/grpc/grpc-ios.git", "1.62.3" ..< "1.63.0")
   } else {
     packageInfo = ("https://github.com/google/grpc-binary.git", "1.62.2" ..< "1.63.0")
@@ -1447,7 +1448,7 @@ func grpcDependency() -> Package.Dependency {
 }
 
 func firestoreWrapperTarget() -> Target {
-  if ProcessInfo.processInfo.environment["FIREBASE_SOURCE_FIRESTORE"] != nil {
+  if firebaseSourceFirestore {
     return .target(
       name: "FirebaseFirestoreTarget",
       dependencies: [.target(name: "FirebaseFirestore",
@@ -1467,7 +1468,7 @@ func firestoreWrapperTarget() -> Target {
 }
 
 func firestoreTargets() -> [Target] {
-  if ProcessInfo.processInfo.environment["FIREBASE_SOURCE_FIRESTORE"] != nil {
+  if firebaseSourceFirestore {
     return [
       .target(
         name: "FirebaseFirestoreInternalWrapper",
