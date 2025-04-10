@@ -104,15 +104,15 @@ NSSet<NSString*>* _Nullable LoadXCTestConfigurationTestsToRun() {
   }
 
   if (!config) {
-    NSLog(@"Failed to load any configuaration from %@=%@. %@", configEnvVar,
+    NSLog(@"Failed to load any configuration from %@=%@. %@", configEnvVar,
           filePath, error);
     return nil;
   }
 
   SEL testsToRunSelector = NSSelectorFromString(@"testsToRun");
   if (![config respondsToSelector:testsToRunSelector]) {
-    NSLog(@"Invalid configuaration from %@=%@: missing testsToRun",
-          configEnvVar, filePath);
+    NSLog(@"Invalid configuration from %@=%@: missing testsToRun", configEnvVar,
+          filePath);
     return nil;
   }
 
@@ -139,7 +139,7 @@ NSSet<NSString*>* _Nullable LoadXCTestConfigurationTestsToRun() {
  * These members are then joined with a ":" as googletest requires.
  *
  * @see
- * https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md
+ * https://github.com/google/googletest/blob/main/docs/advanced.md
  */
 NSString* CreateTestFiltersFromTestsToRun(NSSet<NSString*>* testsToRun) {
   NSMutableString* result = [[NSMutableString alloc] init];
@@ -231,19 +231,15 @@ void XCTestMethod(XCTestCase* self, SEL _cmd) {
 
   const testing::TestResult* result = testInfo->result();
   if (result->Passed()) {
-    // Let XCode know that the test ran and succeeded.
+    // Let Xcode know that the test ran and succeeded.
     XCTAssertTrue(true);
     return;
   } else if (result->Skipped()) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400 || \
-    __TV_OS_VERSION_MAX_ALLOWED >= 130400 ||     \
-    __MAC_OS_X_VERSION_MAX_ALLOWED >= 101504
-    // Let XCode know that the test was skipped.
+    // Let Xcode know that the test was skipped.
     XCTSkip();
-#endif
   }
 
-  // Test failed :-(. Record the failure such that XCode will navigate directly
+  // Test failed :-(. Record the failure such that Xcode will navigate directly
   // to the file:line.
   int parts = result->total_part_count();
   for (int i = 0; i < parts; i++) {
@@ -251,9 +247,6 @@ void XCTestMethod(XCTestCase* self, SEL _cmd) {
     const char* path = part.file_name() ? part.file_name() : "";
     int line = part.line_number() > 0 ? part.line_number() : 0;
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000 || \
-    __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500
-    // Xcode 12
     auto* location = [[XCTSourceCodeLocation alloc] initWithFilePath:@(path)
                                                           lineNumber:line];
     auto* context = [[XCTSourceCodeContext alloc] initWithLocation:location];
@@ -264,15 +257,6 @@ void XCTestMethod(XCTestCase* self, SEL _cmd) {
                                  associatedError:nil
                                      attachments:@[]];
     [self recordIssue:issue];
-
-#else
-    // Xcode 11 and prior. recordFailureWithDescription:inFile:atLine:expected:
-    // is deprecated in Xcode 12.
-    [self recordFailureWithDescription:@(part.message())
-                                inFile:@(path)
-                                atLine:line
-                              expected:true];
-#endif
   }
 }
 

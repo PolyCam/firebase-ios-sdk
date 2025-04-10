@@ -16,6 +16,7 @@
 import Foundation
 import XCTest
 
+@available(iOS 13, tvOS 13, macOS 10.15, macCatalyst 13, watchOS 7, *)
 class StoragePathTests: XCTestCase {
   func testGSURI() throws {
     let path = try StoragePath.path(string: "gs://bucket/path/to/object")
@@ -174,7 +175,7 @@ class StoragePathTests: XCTestCase {
     XCTAssertEqual(parent?.stringValue(), "gs://bucket/path")
   }
 
-  func testParentChildPathOnlySlashs() {
+  func testParentChildPathOnlySlashes() {
     let path = StoragePath(with: "bucket", object: "/////")
     let parent = path.parent()
     XCTAssertNil(parent)

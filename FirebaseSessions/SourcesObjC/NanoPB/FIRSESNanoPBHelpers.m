@@ -21,6 +21,8 @@
 
 #import "FirebaseSessions/SourcesObjC/Protogen/nanopb/sessions.nanopb.h"
 
+@import FirebaseCoreExtension;
+
 #import <nanopb/pb.h>
 #import <nanopb/pb_decode.h>
 #import <nanopb/pb_encode.h>
@@ -85,12 +87,12 @@ NSData *_Nullable FIRSESEncodeProto(const pb_field_t fields[],
 }
 #pragma clang diagnostic pop
 
-/** Mallocs a pb_bytes_array and copies the given NSData bytes into the bytes array.
+/** Callocs a pb_bytes_array and copies the given NSData bytes into the bytes array.
  * @note Memory needs to be free manually, through pb_free or pb_release.
  * @param data The data to copy into the new bytes array.
  */
 pb_bytes_array_t *_Nullable FIRSESEncodeData(NSData *_Nullable data) {
-  pb_bytes_array_t *pbBytes = malloc(PB_BYTES_ARRAY_T_ALLOCSIZE(data.length));
+  pb_bytes_array_t *pbBytes = calloc(1, PB_BYTES_ARRAY_T_ALLOCSIZE(data.length));
   if (pbBytes == NULL) {
     return NULL;
   }
@@ -99,7 +101,7 @@ pb_bytes_array_t *_Nullable FIRSESEncodeData(NSData *_Nullable data) {
   return pbBytes;
 }
 
-/** Mallocs a pb_bytes_array and copies the given NSString's bytes into the bytes array.
+/** Callocs a pb_bytes_array and copies the given NSString's bytes into the bytes array.
  * @note Memory needs to be freed manually, through pb_free or pb_release.
  * @param string The string to encode as pb_bytes.
  */
@@ -172,7 +174,7 @@ NSString *_Nullable FIRSESGetSysctlEntry(const char *sysctlKey) {
   size_t size;
   sysctlbyname(sysctlKey, NULL, &size, NULL, 0);
   if (size > 0) {
-    char *entryValueCStr = malloc(size);
+    char *entryValueCStr = calloc(1, size);
     sysctlbyname(sysctlKey, entryValueCStr, &size, NULL, 0);
     entryValue = [NSString stringWithCString:entryValueCStr encoding:NSUTF8StringEncoding];
     free(entryValueCStr);
@@ -180,6 +182,24 @@ NSString *_Nullable FIRSESGetSysctlEntry(const char *sysctlKey) {
   } else {
     return nil;
   }
+}
+
+NSData *FIRSESTransportBytes(const void *_Nonnull proto) {
+  const pb_field_t *fields = firebase_appquality_sessions_SessionEvent_fields;
+  NSError *error;
+  NSData *data = FIRSESEncodeProto(fields, proto, &error);
+  if (error != nil) {
+    FIRLogError(
+        @"FirebaseSessions", @"I-SES000001", @"%@",
+        [NSString stringWithFormat:@"Session Event failed to encode as proto with error: %@",
+                                   error.debugDescription]);
+  }
+  if (data == nil) {
+    data = [NSData data];
+    FIRLogError(@"FirebaseSessions", @"I-SES000002",
+                @"Session Event generated nil transportBytes. Returning empty data.");
+  }
+  return data;
 }
 
 NS_ASSUME_NONNULL_END

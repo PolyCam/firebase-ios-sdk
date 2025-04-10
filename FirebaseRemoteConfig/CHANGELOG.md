@@ -1,3 +1,39 @@
+# 11.10.0
+- [fixed] Fix intermittent `RCNConfigRealtime` crash due to incorrect parsing of fragmented JSON. (#14518)
+
+# 11.9.0
+- [fixed] Mark internal `fetchSession` property as `atomic` to prevent a concurrency
+  related crash. (#14449)
+
+# 11.8.0
+- [fixed] Mark completion handlers as Sendable in RemoteConfig class.
+  Some completions handlers were missed in the 11.7.0 update. (#14257)
+
+# 11.7.0
+- [fixed] Mark ConfigUpdateListenerRegistration Sendable. (#14215)
+- [fixed] Mark completion handlers as Sendable in RemoteConfig class. (#14257)
+- [feature] Added support for custom signal targeting in Remote Config. Use
+  `setCustomSignals` API for setting custom signals and use them to build
+  custom targeting conditions in Remote Config. (#13976)
+
+# 11.5.0
+- [fixed] Mark two internal properties as `atomic` to prevent concurrency
+  related crash. (#13898)
+
+# 11.0.0
+- [fixed] RemoteConfigValue stringValue is now `nonnull`. This may break some builds. (#10870)
+- [removed] **Breaking change**: The deprecated `FirebaseRemoteConfigSwift`
+  module has been removed. See
+  https://firebase.google.com/docs/ios/swift-migration for migration
+  instructions.
+
+  # 10.25.0
+- [fixed] Fixed bug preventing Remote Config from working with a custom sqlite3
+  dependency (#10884).
+
+# 10.23.0
+- [changed] Add support for other Firebase products to integrate with Remote Config.
+
 # 10.17.0
 - [feature] The `FirebaseRemoteConfig` module now contains Firebase Remote
   Config's Swift-only APIs that were previously only available via the

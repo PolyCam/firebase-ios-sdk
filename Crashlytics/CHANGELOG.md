@@ -1,3 +1,45 @@
+# 11.9.0
+- [fixed] Made on-demand fatal recording thread suspension configurable through setting to improve performance and avoid audio glitch on Unity. Change is for framework only.
+
+# 11.7.0
+- [fixed] Updated `upload-symbols` to version 3.20, wait for `debug.dylib` DWARF content getting generated when build with `--build-phase` option. Added `debug.dylib` DWARF content to run script input file list for user who enabled user script sandboxing (#14054).
+- [fixed] Updated all memory allocation from `malloc()` to `calloc()` (#14209).
+
+# 11.5.0
+- [changed] Updated `upload-symbols` to version 3.19, removed all methods require CFRelease and switch to modern classes (#13420).
+
+# 11.4.0
+- [fixed] Updated `upload-symbols` to version 3.18 with support for uploading multiple DWARF contents in a dSYM bundle (#13543).
+- [fixed] Fixed upload-symbols run script argument order (#13965).
+
+# 10.28.1
+- [changed] Reverted "Add SIGTERM support (#12881)" (#13117)
+
+# 10.28.0
+- [fixed] Created a new queue for rollouts persistence writes and made sure rollouts logging queue is not nil while dispatching (#12913).
+
+# 10.27.0
+- [added] Added support for catching the SIGTERM signal (#12881).
+- [fixed] Fixed a hang when persisting Remote Config Rollouts to disk (#12913).
+
+# 10.25.0
+- [changed] Removed usages of user defaults API from internal Firebase Sessions
+  dependency to eliminate required reason impact.
+
+# 10.24.0
+- [fixed] Fix `'FirebaseCrashlytics/FirebaseCrashlytics-Swift.h' file not found`
+  errors (#12611).
+- [changed] Remove usages of `mach_absolute_time` to reduce required reason impact.
+
+# 10.23.0
+- [added] Updated upload-symbols to 13.7 with VisionPro build phase support. (#12306)
+- [changed] Added support for Crashlytics to report metadata about Remote Config keys and values.
+
+# 10.22.0
+- [fixed] Force validation or rotation of FIDs for FirebaseSessions.
+- [changed] Removed calls to statfs in the Crashlytics SDK to comply with Apple Privacy Manifests. This change removes support for collecting Disk Space Free in Crashlytics reports.
+- [fixed] Fixed FirebaseSessions crash on startup that occurs in release mode in Xcode 15.3 and other build configurations. (#11403)
+
 # 10.16.0
 - [fixed] Fixed a memory leak regression when generating session events (#11725).
 
@@ -50,7 +92,7 @@
 # 8.2.0
 - [changed] Incorporated code quality changes around integer overflow, potential race conditions, and reinstalling signal handlers.
 - [fixed] Fixed an issue where iOS-only apps running on iPads would report iOS as their OS Name.
-- [fixed] Fixed depcrecation warning for projects with minimum deployment version iOS 13 and up.
+- [fixed] Fixed deprecation warning for projects with minimum deployment version iOS 13 and up.
 
 # 8.0.0
 - [changed] Added a warning to upload-symbols when it detects a dSYM with hidden symbols.

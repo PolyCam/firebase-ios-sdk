@@ -54,6 +54,7 @@ body:
         - Authentication
         - Crashlytics
         - Database
+        - Data Connect
         - DynamicLinks
         - Firestore
         - Functions
@@ -64,5 +65,6 @@ body:
         - Performance
         - Remote Config
         - Storage
+        - Vertex AI
     validations:
       required: true

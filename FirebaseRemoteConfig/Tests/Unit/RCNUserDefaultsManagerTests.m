@@ -23,6 +23,8 @@ static NSTimeInterval RCNUserDefaultsSampleTimeStamp = 0;
 static NSString* const AppName = @"testApp";
 static NSString* const FQNamespace1 = @"testNamespace1:testApp";
 static NSString* const FQNamespace2 = @"testNamespace2:testApp";
+static NSMutableDictionary<NSString*, NSString*>* customSignals1 = nil;
+static NSMutableDictionary<NSString*, NSString*>* customSignals2 = nil;
 
 @interface RCNUserDefaultsManagerTests : XCTestCase
 
@@ -36,6 +38,13 @@ static NSString* const FQNamespace2 = @"testNamespace2:testApp";
   [[NSUserDefaults standardUserDefaults]
       removePersistentDomainForName:[NSBundle mainBundle].bundleIdentifier];
   RCNUserDefaultsSampleTimeStamp = [[NSDate date] timeIntervalSince1970];
+
+  customSignals1 = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"signal1" : @"stringValue",
+  }];
+  customSignals2 = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"signal2" : @"stringValue2",
+  }];
 }
 
 - (void)testUserDefaultsEtagWriteAndRead {
@@ -129,8 +138,17 @@ static NSString* const FQNamespace2 = @"testNamespace2:testApp";
       [[RCNUserDefaultsManager alloc] initWithAppName:AppName
                                              bundleID:[NSBundle mainBundle].bundleIdentifier
                                             namespace:FQNamespace1];
-  [manager setLastTemplateVersion:@"1"];
-  XCTAssertEqual([manager lastTemplateVersion], @"1");
+  [manager setLastFetchedTemplateVersion:@"1"];
+  XCTAssertEqual([manager lastFetchedTemplateVersion], @"1");
+}
+
+- (void)testUserDefaultsActiveTemplateVersionWriteAndRead {
+  RCNUserDefaultsManager* manager =
+      [[RCNUserDefaultsManager alloc] initWithAppName:AppName
+                                             bundleID:[NSBundle mainBundle].bundleIdentifier
+                                            namespace:FQNamespace1];
+  [manager setLastActiveTemplateVersion:@"1"];
+  XCTAssertEqual([manager lastActiveTemplateVersion], @"1");
 }
 
 - (void)testUserDefaultsRealtimeThrottleEndTimeWriteAndRead {
@@ -157,6 +175,18 @@ static NSString* const FQNamespace2 = @"testNamespace2:testApp";
   [manager setCurrentRealtimeThrottlingRetryIntervalSeconds:RCNUserDefaultsSampleTimeStamp - 2.0];
   XCTAssertEqual([manager currentRealtimeThrottlingRetryIntervalSeconds],
                  RCNUserDefaultsSampleTimeStamp - 2.0);
+}
+
+- (void)testUserDefaultsCustomSignalsWriteAndRead {
+  RCNUserDefaultsManager* manager =
+      [[RCNUserDefaultsManager alloc] initWithAppName:AppName
+                                             bundleID:[NSBundle mainBundle].bundleIdentifier
+                                            namespace:FQNamespace1];
+  [manager setCustomSignals:customSignals1];
+  XCTAssertEqualObjects([manager customSignals], customSignals1);
+
+  [manager setCustomSignals:customSignals2];
+  XCTAssertEqualObjects([manager customSignals], customSignals2);
 }
 
 - (void)testUserDefaultsForMultipleNamespaces {
@@ -229,10 +259,22 @@ static NSString* const FQNamespace2 = @"testNamespace2:testApp";
   XCTAssertEqual([manager2 realtimeRetryCount], 2);
 
   /// Fetch template version.
-  [manager1 setLastTemplateVersion:@"1"];
-  [manager2 setLastTemplateVersion:@"2"];
-  XCTAssertEqualObjects([manager1 lastTemplateVersion], @"1");
-  XCTAssertEqualObjects([manager2 lastTemplateVersion], @"2");
+  [manager1 setLastFetchedTemplateVersion:@"1"];
+  [manager2 setLastFetchedTemplateVersion:@"2"];
+  XCTAssertEqualObjects([manager1 lastFetchedTemplateVersion], @"1");
+  XCTAssertEqualObjects([manager2 lastFetchedTemplateVersion], @"2");
+
+  /// Active template version.
+  [manager1 setLastActiveTemplateVersion:@"1"];
+  [manager2 setLastActiveTemplateVersion:@"2"];
+  XCTAssertEqualObjects([manager1 lastActiveTemplateVersion], @"1");
+  XCTAssertEqualObjects([manager2 lastActiveTemplateVersion], @"2");
+
+  /// Custom Signals
+  [manager1 setCustomSignals:customSignals1];
+  [manager2 setCustomSignals:customSignals2];
+  XCTAssertEqualObjects([manager1 customSignals], customSignals1);
+  XCTAssertEqualObjects([manager2 customSignals], customSignals2);
 }
 
 - (void)testUserDefaultsReset {

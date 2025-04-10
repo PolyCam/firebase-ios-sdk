@@ -78,15 +78,15 @@ final class FunctionsAPITests: XCTestCase {
 
     let data: Any? = nil
     callableRef.call(data) { result, error in
-      if let result = result {
+      if let result {
         _ = result.data
       } else if let _ /* error */ = error {
         // ...
       }
     }
 
-    if #available(iOS 13.0, macOS 11.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
-      // async/await is a Swift 5.5+ feature available on iOS 15+
+    if #available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
+      // async/await is a Swift Concurrency feature available on iOS 13+ and macOS 10.15+
       Task {
         do {
           let result = try await callableRef.call(data)
@@ -98,15 +98,15 @@ final class FunctionsAPITests: XCTestCase {
     }
 
     callableRef.call { result, error in
-      if let result = result {
+      if let result {
         _ = result.data
       } else if let _ /* error */ = error {
         // ...
       }
     }
 
-    if #available(iOS 13.0, macOS 11.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
-      // async/await is a Swift 5.5+ feature available on iOS 15+
+    if #available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
+      // async/await is a Swift Concurrency feature available on iOS 13+ and macOS 10.15+
       Task {
         do {
           let result = try await callableRef.call()
@@ -120,7 +120,7 @@ final class FunctionsAPITests: XCTestCase {
     // MARK: - FunctionsErrorCode
 
     callableRef.call { _, error in
-      if let error = error {
+      if let error {
         switch (error as NSError).code {
         case FunctionsErrorCode.OK.rawValue:
           break

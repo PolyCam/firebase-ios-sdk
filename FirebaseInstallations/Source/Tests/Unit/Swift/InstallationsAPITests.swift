@@ -51,8 +51,8 @@ final class InstallationsAPITests {
       }
     }
 
-    if #available(iOS 13.0, macOS 11.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
-      // async/await is a Swift 5.5+ feature available on iOS 15+
+    if #available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
+      // async/await is a Swift Concurrency feature available on iOS 13+ and macOS 10.15+
       Task {
         do {
           try await Installations.installations().installationID()
@@ -71,8 +71,8 @@ final class InstallationsAPITests {
       }
     }
 
-    if #available(iOS 13.0, macOS 11.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
-      // async/await is a Swift 5.5+ feature available on iOS 15+
+    if #available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
+      // async/await is a Swift Concurrency feature available on iOS 13+ and macOS 10.15+
       Task {
         do {
           _ = try await Installations.installations().authToken()
@@ -91,8 +91,8 @@ final class InstallationsAPITests {
       }
     }
 
-    if #available(iOS 13.0, macOS 11.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
-      // async/await is a Swift 5.5+ feature available on iOS 15+
+    if #available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
+      // async/await is a Swift Concurrency feature available on iOS 13+ and macOS 10.15+
       Task {
         do {
           _ = try await Installations.installations().authTokenForcingRefresh(true)
@@ -110,8 +110,8 @@ final class InstallationsAPITests {
     }
 
     #if swift(>=5.5)
-      if #available(iOS 13.0, macOS 11.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
-        // async/await is a Swift 5.5+ feature available on iOS 15+
+      if #available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 7.0, *) {
+        // async/await is a Swift Concurrency feature available on iOS 13+ and macOS 10.15+
         Task {
           do {
             _ = try await Installations.installations().delete()
@@ -131,7 +131,7 @@ final class InstallationsAPITests {
     // MARK: -  InstallationsAuthTokenResult
 
     Installations.installations().authToken { result, _ in
-      if let result = result {
+      if let result {
         _ = result.expirationDate
         _ = result.authToken
       }
@@ -140,7 +140,7 @@ final class InstallationsAPITests {
     // MARK: - InstallationsErrorCode
 
     Installations.installations().authToken { _, error in
-      if let error = error {
+      if let error {
         // Old error handling.
         switch (error as NSError).code {
         case Int(InstallationsErrorCode.unknown.rawValue):
@@ -165,7 +165,6 @@ final class InstallationsAPITests {
           break
         case InstallationsErrorCode.invalidConfiguration:
           break
-
         default:
           break
         }

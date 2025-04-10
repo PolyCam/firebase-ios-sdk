@@ -65,6 +65,7 @@
   s = [codeSettings androidPackageName];
   s = [codeSettings androidMinimumVersion];
   s = [codeSettings dynamicLinkDomain];
+  s = [codeSettings linkDomain];
 }
 
 - (void)FIRAuthAdditionalUserInfo_h:(FIRAdditionalUserInfo *)additionalUserInfo {
@@ -103,7 +104,8 @@
   [auth setCustomAuthDomain:s];
 #if TARGET_OS_IOS
   __unused NSData *d = [auth APNSToken];
-  auth.APNSToken = [[NSData alloc] init];
+  // TODO: It seems like a no-op and a bug to have this API in Objective-C
+  // auth.APNSToken = [[NSData alloc] init];
 #endif
 }
 
@@ -279,6 +281,7 @@
   c = FIRAuthErrorCodeTenantIDMismatch;
   c = FIRAuthErrorCodeUnsupportedTenantOperation;
   c = FIRAuthErrorCodeInvalidDynamicLinkDomain;
+  c = FIRAuthErrorCodeInvalidHostingLinkDomain;
   c = FIRAuthErrorCodeRejectedCredential;
   c = FIRAuthErrorCodeGameKitNotLinked;
   c = FIRAuthErrorCodeSecondFactorRequired;
@@ -416,6 +419,9 @@
 
 #if TARGET_OS_IOS
 - (void)FIROAuthProvider_h:(FIROAuthProvider *)provider {
+  FIROAuthProvider *p = [FIROAuthProvider providerWithProviderID:@""];
+  p = [FIROAuthProvider providerWithProviderID:@"" auth:[FIRAuth auth]];
+
   FIROAuthCredential *c = [FIROAuthProvider credentialWithProviderID:@"id" accessToken:@"token"];
   c = [FIROAuthProvider credentialWithProviderID:@"id"
                                          IDToken:@"idToken"

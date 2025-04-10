@@ -1,3 +1,22 @@
+# 11.6.0
+- [fixed] Fix a crash related to registering for notifications when the app is between foreground or background states. (#13174)
+
+# 11.5.0
+- [fixed] Replaced usage of the deprecated `UIApplication.keyWindow` property
+  with `UIWindow.isKeyWindow`; this API is also available on visionOS. Note that
+  this fix will not be in the 11.5.0 zip and Carthage distributions, but will be
+  included from 11.6.0 onwards. (#14048)
+
+# 11.4.0
+- [fixed] Fix a crash related to thread sanitization on FPRNetworkTrace class (#13581).
+
+# 10.28.0
+- Fix Crash from InstrumentUploadTaskWithStreamedRequest (#12983).
+- Replace SystemConfiguration with a more recent network monitoring API by Apple (#13079).
+
+# 10.25.0
+- [changed] Removed usages of user defaults API to eliminate required reason impact.
+
 # 10.18.0
 - [fixed] Fix a Xcode 15.1 build warning (#12027).
 
@@ -89,7 +108,7 @@
 
 # 7.0.0
 - Fix issue related to crashes on specific kind of network requests #6713.
-- Fixed issue related to race condition on Firebase Remote Config initializaton #6287.
+- Fixed issue related to race condition on Firebase Remote Config initialization #6287.
 - Update Firebase dependencies to be latest and greatest.
 
 # 3.3.1

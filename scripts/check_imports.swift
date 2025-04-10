@@ -27,6 +27,9 @@ import Foundation
 let skipDirPatterns = ["/Sample/", "/Pods/",
                        "FirebaseDynamicLinks/Tests/Integration",
                        "FirebaseInAppMessaging/Tests/Integration/",
+                       "FirebaseAuth/",
+                       // TODO: Turn Combine back on without Auth includes.
+                       "FirebaseCombineSwift/Tests/Unit/FirebaseCombine-unit-Bridging-Header.h",
                        "SymbolCollisionTest/", "/gen/",
                        "IntegrationTesting/CocoapodsIntegrationTest/",
                        "FirebasePerformance/Tests/TestApp/",
@@ -44,7 +47,6 @@ let skipDirPatterns = ["/Sample/", "/Pods/",
     "FirebaseDatabase/Sources/third_party/Wrap-leveldb", // Pending SwiftPM for leveldb.
     "Example",
     "Firestore",
-    "GoogleUtilitiesComponents",
     "FirebasePerformance/ProtoSupport/",
   ]
 
@@ -100,6 +102,7 @@ private func checkFile(_ file: String, logger: ErrorLogger, inRepo repoURL: URL,
   let isPrivate = file.range(of: "/Sources/Private/") != nil ||
     // Delete when FirebaseInstallations fixes directory structure.
     file.range(of: "Source/Library/Private/FirebaseInstallationsInternal.h") != nil ||
+    file.range(of: "FirebaseCore/Sources/FIROptionsInternal.h") != nil ||
     file.range(of: "FirebaseCore/Extension") != nil
 
   // Treat all files with names finishing on "Test" or "Tests" as files with tests.

@@ -14,6 +14,12 @@
 
 #include "Crashlytics/Crashlytics/Helpers/FIRCLSFile.h"
 
+#if SWIFT_PACKAGE
+@import FirebaseCrashlyticsSwift;
+#else  // Swift Package Manager
+#import <FirebaseCrashlytics/FirebaseCrashlytics-Swift.h>
+#endif  // CocoaPods
+
 #import <XCTest/XCTest.h>
 
 @interface FIRCLSFileTests : XCTestCase
@@ -169,6 +175,31 @@
                         buffered ? @"" : @"un");
 }
 
+// This is the test to compare FIRCLSwiftFileUtility.stringToHexConverter(for:) and
+// FIRCLSFileWriteHexEncodedString return the same hex encoding value
+- (void)testHexEncodingStringObjcAndSwiftResultsSame {
+  NSString *testedValueString = @"是themis的测试数据，输入中文";
+
+  FIRCLSFile *unbufferedFile = &_unbufferedFile;
+  FIRCLSFileWriteHashStart(unbufferedFile);
+  FIRCLSFileWriteHashEntryHexEncodedString(unbufferedFile, "hex", [testedValueString UTF8String]);
+  FIRCLSFileWriteHashEnd(unbufferedFile);
+  NSString *contentsFromObjcHexEncoding = [self contentsOfFileAtPath:self.unbufferedPath];
+
+  FIRCLSFile *bufferedFile = &_bufferedFile;
+  NSString *encodedValue = [FIRCLSwiftFileUtility stringToHexConverterFor:testedValueString];
+  FIRCLSFileWriteHashStart(bufferedFile);
+  FIRCLSFileWriteHashKey(bufferedFile, "hex");
+  FIRCLSFileWriteStringUnquoted(bufferedFile, "\"");
+  FIRCLSFileWriteStringUnquoted(bufferedFile, [encodedValue UTF8String]);
+  FIRCLSFileWriteStringUnquoted(bufferedFile, "\"");
+  FIRCLSFileWriteHashEnd(bufferedFile);
+  FIRCLSFileFlushWriteBuffer(bufferedFile);
+  NSString *contentsFromSwiftHexEncoding = [self contentsOfFileAtPath:self.bufferedPath];
+
+  XCTAssertTrue([contentsFromObjcHexEncoding isEqualToString:contentsFromSwiftHexEncoding]);
+}
+
 #pragma mark -
 
 - (void)testHexEncodingLongString {
@@ -186,7 +217,7 @@
                              filePath:(NSString *)filePath
                                length:(size_t)length
                              buffered:(BOOL)buffered {
-  char *longString = malloc(length * sizeof(char));
+  char *longString = calloc(1, length * sizeof(char));
 
   memset(longString, 'a', length);  // fill it with 'a' characters
   longString[length - 1] = 0;       // null terminate
@@ -401,7 +432,7 @@
 
 - (void)testLoggingInputLongerThanBuffer {
   size_t inputLength = (FIRCLSWriteBufferLength + 2) * sizeof(char);
-  char *input = malloc(inputLength);
+  char *input = calloc(1, inputLength);
   for (size_t i = 0; i < inputLength - 1; i++) {
     input[i] = i % 26 + 'a';
   }
